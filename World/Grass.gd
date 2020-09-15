@@ -1,6 +1,6 @@
 extends Node2D
 
-onready var GrassEffect = load("res://Effects/GrasssEffect.tscn")
+const GrassEffect = preload("res://Effects/GrassEffect.tscn")
 onready var parent = get_parent()
 
 # Called when the node enters the scene tree for the first time.
@@ -10,9 +10,8 @@ func _ready():
 func destroy_grass():
 	var grassEffect = GrassEffect.instance()
 	grassEffect.global_position = global_position
-	parent.add_child(grassEffect)
+	get_parent().add_child(grassEffect)
 	queue_free()
-
 
 func _on_HurtBox_area_entered(area):
 	destroy_grass()
