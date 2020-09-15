@@ -20,7 +20,7 @@ var destination = null
 onready var stats = $Stats
 onready var sprite = $Sprite
 
-func _on_HurtBox_area_entered(area):
+func _on_HurtBox_hurt(area):
 	stats.health -=1
 	velocity = area.knockback_vector * 120
 	
@@ -38,7 +38,6 @@ func _physics_process(delta):
 	sprite.flip_h = velocity.x < 0
 	velocity = move_and_slide(velocity)
 
-
 func _on_Stats_no_health():
 	destroy_me()
 
@@ -51,7 +50,6 @@ func destroy_me():
 func _on_PlayerDetectionZone_player_found(body):
 	destination = body
 	state = CHASE
-
 
 func _on_PlayerDetectionZone_player_lost():
 	state = IDLE

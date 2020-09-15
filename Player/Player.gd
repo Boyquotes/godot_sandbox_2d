@@ -16,10 +16,11 @@ var velocity = Vector2.ZERO
 
 onready var animationPlayer = $AnimationPlayer
 onready var animationTree = $AnimationTree
-onready var animationState = animationTree.get("parameters/playback");
 onready var swordHitBox = $HitboxPivot/SwordHitbox
+onready var animationState = animationTree.get("parameters/playback");
 
 func _ready():
+	PlayerStats.connect("no_health", self, "no_health")
 	animationTree.active = true
 	
 func get_input_vector(): 
@@ -40,7 +41,8 @@ func _physics_process(delta):
 			roll_state(delta, input)
 			
 	if state != ATTACK && Input.is_action_just_pressed("attack"):
-		animationTree.set("parameters/Attack/blend_position", input)
+		if input != Vector2.ZERO:
+			animationTree.set("parameters/Attack/blend_position", input)
 		velocity = Vector2.ZERO
 		state = ATTACK
 		
@@ -51,6 +53,8 @@ func _physics_process(delta):
 		velocity = input * MAX_SPEED * ROLL_MULTIPLIER
 		state = ROLL
 	
+func _on_HurtBox_hurt(area):
+	PlayerStats.health -= 1
 	
 func attack_state(delta, input):
 	animationState.travel("Attack")
@@ -62,6 +66,7 @@ func move_state(delta, input):
 	if input != Vector2.ZERO:
 		animationTree.set("parameters/Idle/blend_position", input)
 		animationTree.set("parameters/Run/blend_position", input)
+		animationTree.set("parameters/Attack/blend_position", input)
 		swordHitBox.knockback_vector = input
 		animationState.travel("Run")
 		velocity = velocity.move_toward(input * MAX_SPEED, ACCELERATION * delta)
@@ -75,3 +80,6 @@ func attack_animation_finished():
 func roll_animation_finished():
 	velocity = Vector2.ZERO
 	state = MOVE
+
+func no_health():
+	queue_free()
